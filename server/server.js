@@ -5,17 +5,20 @@ import bodyParser from 'body-parser';
 import connectDB from './config/database.js';
 import { clerkMiddleware } from '@clerk/express'
 import clerkWebHooks from './controllers/clerkWebHooks.controller.js';
+import userRouter from './routes/user.routes.js';
 
 const app = express()
 
 await connectDB();
- 
+
 app.use(cors()) //enable cross-origin resource sharing
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(clerkMiddleware())
 
-app.use(clerkWebHooks)
+// api to listen to webhooks
+app.use("/api/clerk",clerkWebHooks)
+
 
 
 const PORT = process.env.PORT || 3000;
@@ -23,6 +26,7 @@ const PORT = process.env.PORT || 3000;
 app.get("/", (req, res) => {
   res.send("API is working")
 })
+app.use("/api/user",userRouter)
 
 app.listen(PORT,() => {
   console.log(`server is running at port ${PORT}`)
