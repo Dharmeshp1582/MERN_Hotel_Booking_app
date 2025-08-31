@@ -28,12 +28,17 @@ const clerkWebHooks = async (req, res) => {
     // Handle events
     switch (type) {
       case "user.created": {
-        await User.create(userData);
+        const existingUser = await User.findById(data.id);
+        if (!existingUser) {
+          await User.create(userData);
+        } else {
+          console.log(`User with ID ${data.id} already exists. Skipping creation.`);
+        }
         break;
       }
 
       case "user.updated": {
-        await User.findByIdAndUpdate(data.id, userData);
+        await User.findByIdAndUpdate(data.id, userData, { new: true });
         break;
       }
 
