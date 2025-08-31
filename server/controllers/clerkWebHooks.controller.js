@@ -4,7 +4,7 @@ import { Webhook } from "svix";
 const clerkWebHooks = async (req, res) => {
   try {
     // Create svix instance with Clerk webhook secret
-    const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+    const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
     // Collect headers
     const headers = {
@@ -14,9 +14,9 @@ const clerkWebHooks = async (req, res) => {
     };
 
     // Verify payload (returns the actual JSON body)
-    const payload = await whook.verify(JSON.stringify(req.body), headers);
+    await webhook.verify(JSON.stringify(req.body), headers);
 
-    const { data, type } = payload;
+    const { data, type } = req.body;
 
     const userData = {
       _id: data.id, // Clerk user ID as Mongo _id
@@ -27,17 +27,20 @@ const clerkWebHooks = async (req, res) => {
 
     // Handle events
     switch (type) {
-      case "user.created":
+      case "user.created": {
         await User.create(userData);
         break;
+      }
 
-      case "user.updated":
+      case "user.updated": {
         await User.findByIdAndUpdate(data.id, userData);
         break;
+      }
 
-      case "user.deleted":
+      case "user.deleted": {
         await User.findByIdAndDelete(data.id);
         break;
+      }
 
       default:
         console.log("Unhandled event:", type);
@@ -50,7 +53,7 @@ const clerkWebHooks = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Webhook error:", error.message);
-    res.status(400).json({
+    res.json({
       status: false,
       message: error.message,
     });
