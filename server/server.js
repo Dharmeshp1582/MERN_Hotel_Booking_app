@@ -9,6 +9,7 @@ import userRouter from './routes/user.routes.js';
 import hotelRouter from './routes/hotel.routes.js';
 import connectCloudinary from './config/cloudinary.js';
 import roomRouter from './routes/room.route.js';
+import bookingRouter from './routes/booking.route.js';
 
 const app = express()
 
@@ -24,7 +25,6 @@ app.use(clerkMiddleware())
 app.use("/api/clerk",clerkWebHooks)
 
 
-
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
@@ -33,6 +33,7 @@ app.get("/", (req, res) => {
 app.use("/api/user",userRouter)
 app.use("/api/hotels",hotelRouter)
 app.use("/api/rooms",roomRouter)
+app.use("/api/bookings",bookingRouter)
 
 app.listen(PORT,() => {
   console.log(`server is running at port ${PORT}`)
