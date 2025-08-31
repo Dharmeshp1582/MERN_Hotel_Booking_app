@@ -3,8 +3,8 @@ import { Webhook } from "svix";
 
 const clerkWebHooks = async (req, res) => {
   try {
-    // Create svix instance with Clerk webhook secret
-    const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+    // Create a svix instance with Clerk webhook secret
+    const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
     // Collect headers
     const headers = {
@@ -14,14 +14,14 @@ const clerkWebHooks = async (req, res) => {
     };
 
     // Verify payload (returns the actual JSON body)
-    await webhook.verify(JSON.stringify(req.body), headers);
+    await whook.verify(JSON.stringify(req.body), headers);
 
     const { data, type } = req.body;
 
     const userData = {
       _id: data.id, // Clerk user ID as Mongo _id
-      username: `${data.first_name} ${data.last_name}`,
       email: data.email_addresses[0].email_address,
+      username: `${data.first_name} ${data.last_name}`,
       image: data.image_url,
     };
 
@@ -48,18 +48,17 @@ const clerkWebHooks = async (req, res) => {
       }
 
       default:
-        console.log("Unhandled event:", type);
         break;
     }
 
     res.json({
-      status: true,
+      success: true,
       message: "✅ Webhook received successfully",
     });
   } catch (error) {
     console.error("❌ Webhook error:", error.message);
     res.json({
-      status: false,
+      success: false,
       message: error.message,
     });
   }
