@@ -69,7 +69,7 @@ export const AppProvider = ({ children }) => {
 
     useEffect(() => {
         fetchRooms();
-    }, []);
+    },[]);
 
     const value = {
         currency, navigate,

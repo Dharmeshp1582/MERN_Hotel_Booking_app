@@ -2,12 +2,13 @@ import Hotel from "../models/hotel.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import Room from "../models/Room.model.js";
 
-//api to create a new room for a hotel
+// api to create a new room for a hotel
 export const createRoom = async (req, res) => {
   try {
     const { roomType, pricePerNight, amenities } = req.body;
+    const { userId } = req.auth(); // ✅ Clerk new syntax
 
-    const hotel = await Hotel.findOne({ owner: req.auth._id });
+    const hotel = await Hotel.findOne({ owner: userId });
 
     if (!hotel) {
       return res.json({
@@ -16,19 +17,19 @@ export const createRoom = async (req, res) => {
       });
     }
 
-    //upload images to cloudinary
+    // upload images to cloudinary
     const uploadImages = req.files.map(async (file) => {
       const response = await cloudinary.uploader.upload(file.path);
       return response.secure_url;
     });
 
-    //wait for all uploads to complete
-    await Promise.all(uploadImages);
+    // wait for all uploads to complete
+    const images = await Promise.all(uploadImages);
 
     await Room.create({
       hotel: hotel._id,
       roomType,
-      pricePerNight: +pricePerNight, //convert to number
+      pricePerNight: +pricePerNight, // convert to number
       amenities: JSON.parse(amenities),
       images,
     });
@@ -45,19 +46,20 @@ export const createRoom = async (req, res) => {
   }
 };
 
-//api to get all rooms
+// api to get all rooms
 export const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ isAvailable: true }).populate({
-      path: "hotel",
-      populate: { path: "owner", select: "image" },
-    }).sort({ createdAt: -1 });//sort based on create time
+    const rooms = await Room.find({ isAvailable: true })
+      .populate({
+        path: "hotel",
+        populate: { path: "owner", select: "image" },
+      })
+      .sort({ createdAt: -1 }); // sort based on create time
 
     res.json({
       success: true,
       rooms,
     });
-
   } catch (error) {
     res.json({
       success: false,
@@ -66,14 +68,23 @@ export const getRooms = async (req, res) => {
   }
 };
 
-//api to get all rooms for a specific hotel
+// api to get all rooms for a specific hotel
 export const getOwnerRooms = async (req, res) => {
   try {
-    const hotelData = await Hotel({
-      owner: req.auth.userId,
-    })
-    
-    const rooms = await Room.find({ hotel: hotelData._id.toString()}).populate("hotel");
+    const { userId } = req.auth(); // ✅ Clerk new syntax
+
+    const hotelData = await Hotel.findOne({ owner: userId });
+
+    if (!hotelData) {
+      return res.json({
+        success: false,
+        message: "Hotel not found",
+      });
+    }
+
+    const rooms = await Room.find({ hotel: hotelData._id.toString() }).populate(
+      "hotel"
+    );
 
     res.json({
       success: true,
@@ -83,24 +94,34 @@ export const getOwnerRooms = async (req, res) => {
     res.json({
       success: false,
       message: error.message,
-    })
+    });
   }
 };
 
+// api to toggle room availability
 export const toggleRoomAvailability = async (req, res) => {
   try {
     const { roomId } = req.body;
     const roomData = await Room.findById(roomId);
+
+    if (!roomData) {
+      return res.json({
+        success: false,
+        message: "Room not found",
+      });
+    }
+
     roomData.isAvailable = !roomData.isAvailable;
     await roomData.save();
+
     res.json({
       success: true,
-      message: "Room availability Updated successfully",
+      message: "Room availability updated successfully",
     });
   } catch (error) {
     res.json({
       success: false,
-      message: error.message
-    })
+      message: error.message,
+    });
   }
 };

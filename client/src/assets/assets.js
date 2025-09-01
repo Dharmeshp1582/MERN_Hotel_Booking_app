@@ -303,11 +303,11 @@ export const userBookingsDummyData = [
 ];
 
 // Dashboard Dummy Data
-export const dashboardDummyData = {
-  totalBookings: 3,
-  totalRevenue: 897,
-  bookings: userBookingsDummyData,
-};
+// export const dashboardDummyData = {
+//   totalBookings: 3,
+//   totalRevenue: 897,
+//   bookings: userBookingsDummyData,
+// };
 
 // --------- SVG code for Book Icon------
 /* 

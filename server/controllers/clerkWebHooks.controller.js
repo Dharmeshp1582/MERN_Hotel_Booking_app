@@ -18,17 +18,18 @@ const clerkWebHooks = async (req, res) => {
 
     const { data, type } = req.body;
 
-    const userData = {
+    
+
+    // Handle events
+    switch (type) {
+      case "user.created": {
+        const userData = {
       _id: data.id, // Clerk user ID as Mongo _id
       email: data.email_addresses[0].email_address,
       username: `${data.first_name} ${data.last_name}`,
       image: data.image_url,
       recentSearchedCities: [], // Provide default empty array
     };
-
-    // Handle events
-    switch (type) {
-      case "user.created": {
         const existingUser = await User.findById(data.id);
         if (!existingUser) {
           await User.create(userData);
@@ -39,6 +40,13 @@ const clerkWebHooks = async (req, res) => {
       }
 
       case "user.updated": {
+        const userData = {
+      _id: data.id, // Clerk user ID as Mongo _id
+      email: data.email_addresses[0].email_address,
+      username: `${data.first_name} ${data.last_name}`,
+      image: data.image_url,
+      recentSearchedCities: [], // Provide default empty array
+    };
         await User.findByIdAndUpdate(data.id, userData, { new: true });
         break;
       }

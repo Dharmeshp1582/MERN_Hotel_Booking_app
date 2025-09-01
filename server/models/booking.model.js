@@ -14,7 +14,7 @@ const bookingSchema = new mongoose.Schema(
     },
      hotel: {
       type: String,
-      ref: "hotel",
+      ref: "Hotel",
       required: true,
     },
     checkInDate: {
