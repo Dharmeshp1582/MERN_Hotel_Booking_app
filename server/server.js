@@ -1,42 +1,40 @@
-import express from "express";
+import express from 'express'
 import "dotenv/config";
 import cors from "cors";
-import connectDB from "./configs/db.js";
-import { clerkMiddleware } from "@clerk/express";
-import userRouter from "./routes/user.routes.js";
-import hotelRouter from "./routes/hotel.routes.js";
-import roomRouter from "./routes/room.routes.js";
-import bookingRouter from "./routes/booking.routes.js";
-import clerkWebhooks from "./controllers/clerkWebhooks.js";
-import connectCloudinary from "./configs/cloudinary.js";
-import { stripeWebhooks } from "./controllers/stripeWebhooks.js";
-// import { stripeWebhooks } from "./controllers/stripeWebhooks.js";
+import bodyParser from 'body-parser';
+import connectDB from './config/database.js';
+import { clerkMiddleware } from '@clerk/express'
+import clerkWebHooks from './controllers/clerkWebHooks.controller.js';
+import userRouter from './routes/user.routes.js';
+import hotelRouter from './routes/hotel.routes.js';
+import connectCloudinary from './config/cloudinary.js';
+import roomRouter from './routes/room.route.js';
+import bookingRouter from './routes/booking.route.js';
 
-connectDB();
+const app = express()
+
+await connectDB();
 connectCloudinary();
 
-const app = express();
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-
-// API to listen to Stripe Webhooks
-app.post("/api/stripe",express.raw({ type: "application/json" }),stripeWebhooks);
-
-// Middleware to parse JSON
+app.use(cors()) //enable cross-origin resource sharing
 app.use(express.json());
-app.use(clerkMiddleware());
+app.use(bodyParser.json());
+app.use(clerkMiddleware())
 
-// API to listen to Clerk Webhooks
-app.use("/api/clerk", clerkWebhooks);
+// api to listen to webhooks
+app.use("/api/clerk",clerkWebHooks)
 
-app.get("/", (req, res) => res.send("API is working"));
-app.use("/api/user", userRouter);
-app.use("/api/hotels", hotelRouter);
-app.use("/api/rooms", roomRouter);
-app.use("/api/bookings", bookingRouter);
-
-app.get('/', (req, res) => {
-  res.send("API is working")
-})
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.get("/", (req, res) => {
+  res.send("API is working")
+})
+app.use("/api/user",userRouter)
+app.use("/api/hotels",hotelRouter)
+app.use("/api/rooms",roomRouter)
+app.use("/api/bookings",bookingRouter)
+
+app.listen(PORT,() => {
+  console.log(`server is running at port ${PORT}`)
+})

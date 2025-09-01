@@ -5,27 +5,26 @@
   "main": "server.js",
   "scripts": {
     "server": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  },
   "dependencies": {
-    "@clerk/express": "^1.4.2",
-    "bcrypt": "^5.1.1",
-    "cloudinary": "^2.6.0",
+    "@clerk/express": "^1.7.26",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.13.2",
-    "multer": "^1.4.5-lts.2",
-    "nodemailer": "^6.10.0",
-    "stripe": "^18.0.0",
-    "svix": "^1.63.1"
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
+    "svix": "^1.75.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

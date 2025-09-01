@@ -1,26 +1,40 @@
-import Hotel from "../models/Hotel.model.js";
-import User from "../models/User.model.js";
+import User from "../models/user.model.js";
+import Hotel from "../models/hotel.model.js";
 
-// API to create a new hotel
-// POST /api/hotels
 export const registerHotel = async (req, res) => {
   try {
     const { name, address, contact, city } = req.body;
-    const owner = req.user._id;
+    const owner = req.user; // Already authenticated by protect
 
-    // Check if User Already Registered
-    const hotel = await Hotel.findOne({ owner });
+    // Check if hotel already exists
+    const hotel = await Hotel.findOne({ name });
     if (hotel) {
-      return res.json({ success: false, message: "Hotel Already Registered" });
+      return res.json({
+        success: false,
+        message: "Hotel already exists",
+      });
     }
 
-    await Hotel.create({ name, address, contact, city, owner });
+    await Hotel.create({
+      name,
+      address,
+      contact,
+      city,
+      owner: owner._id, // MongoDB ObjectId
+    });
 
-    // Update User Role
-    await User.findByIdAndUpdate(owner, { role: "hotelOwner" });
+    // Update user role
+    owner.role = "hotelOwner";
+    await owner.save();
 
-    res.json({ success: true, message: "Hotel Registered Successfully" });
+    res.json({
+      success: true,
+      message: "Hotel registered successfully",
+    });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };

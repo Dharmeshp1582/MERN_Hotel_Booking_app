@@ -1,9 +1,9 @@
-import express from "express";
-import { protect } from "../middleware/auth.middleware.js";
-import { registerHotel } from "../controllers/hotel.controller.js";
+import express from 'express'
+import { protect } from '../middleware/auth.middleware.js'
+import { registerHotel } from '../controllers/hotel.controller.js'
 
-const hotelRouter = express.Router();
+const hotelRouter = express.Router()
 
-hotelRouter.post("/", protect, registerHotel);
+hotelRouter.post("/register",protect,registerHotel);
 
 export default hotelRouter;
