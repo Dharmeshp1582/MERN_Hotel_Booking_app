@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import transporter from "../config/nodemailer.js";
 import Booking from "../models/booking.model.js";
 import Hotel from "../models/hotel.model.js";
@@ -164,7 +165,7 @@ export const stripePayment = async (req, res) => {
 
     const { origin } = req.headers;
 
-    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
+    const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     // Create Line Items for Stripe
     const line_items = [
