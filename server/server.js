@@ -19,9 +19,9 @@ connectCloudinary();
 
 app.use(cors()) //enable cross-origin resource sharing
 
+app.use(express.json());
 // API to listen to Stripe Webhooks
 app.post("/api/stripe",express.raw({ type: "application/json" }),stripeWebhooks);
-app.use(express.json());
 app.use(bodyParser.json());
 app.use(clerkMiddleware())
 
