@@ -3,17 +3,17 @@ import mongoose from "mongoose";
 const bookingSchema = new mongoose.Schema(
   {
     user: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     room: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Room",
       required: true,
     },
-     hotel: {
-      type: String,
+    hotel: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Hotel",
       required: true,
     },
